@@ -26,6 +26,7 @@ def parse_args():
     parser.add_argument("--padding", type=float, default=1.0, help="Box padding (nm)")
     parser.add_argument("--ionic_strength", type=float, default=0.15, help="Ionic strength (mM)")
     parser.add_argument("--temperature", type=float, default=300.0, help="Temperature (K)")
+    parser.add_argument("--timestep", type=float, default=2.0, help="Time Step (fs)")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
     return parser.parse_args()
 
@@ -59,9 +60,9 @@ def solvate_and_minimize_system(
         padding: float, 
         ionic_strength: float, 
         temperature: float,
-        time_step_fs: float
+        timestep: float
 ):
-    forcefield = ForceField(ForceField, water_model)
+    forcefield = ForceField(forcefield, water_model)
     modeller = Modeller(fixer.topology, fixer.positions)
     modeller.addHydrogens(forcefield, pH=ph)
 
@@ -77,7 +78,7 @@ def solvate_and_minimize_system(
     system = forcefield.createSystem(
         modeller.topology,
         nonbondedMethod=PME,
-        nonbonderCutoff=1.0 * nanometers,
+        nonbondedCutoff=1.0 * nanometers,
         constraints=HBonds,
         rigidWater=False
     )
@@ -85,7 +86,7 @@ def solvate_and_minimize_system(
     integrator = LangevinMiddleIntegrator(
         temperature * kelvin,
         1 / picosecond,
-        time_step_fs * femtosecond
+        timestep * femtosecond
     )
 
     logger.info(f"Minimizing energy...")
@@ -111,8 +112,8 @@ def main():
     args = parse_args()
     configure_logging(args.verbose)
 
-    pdb_path = Path(args.input)
-    output_pdb = Path(args.output)
+    pdb_path = Path(args.input_pdb)
+    output_pdb = Path(args.output_pdb)
 
     fixer = fix_pdb_structure(pdb_path)
     solvate_and_minimize_system(
