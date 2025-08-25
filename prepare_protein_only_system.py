@@ -16,7 +16,7 @@ from loguru import logger
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Prepare system for Gromacs using OpenMM.")
+    parser = argparse.ArgumentParser(description="Prepare system for using OpenMM.")
     parser.add_argument("--input_pdb", required=True, help="Input .pdb file")
     parser.add_argument("--output_pdb", required=True, help="Output .pdb file")
     parser.add_argument("--output_prefix", required=True, help="Output prefix for Gromacs files")
@@ -40,7 +40,7 @@ def configure_logging(verbose: bool):
 def fix_pdb_structure(input_pdb: Path) -> PDBFixer:
     logger.info(f"Loading PDB file: {input_pdb.name}")
     fixer = PDBFixer(filename=str(input_pdb))
-    logger.info("Fixing Input Structure!")
+    logger.info("Fixing Input Structure...")
     fixer.findMissingResidues()
     fixer.findMissingAtoms()
     fixer.findNonstandardResidues()
@@ -54,7 +54,7 @@ def solvate_and_minimize_system(
         fixer: PDBFixer,
         output_pdb: Path,
         gmx_prefix: str,
-        forcefield: ForceField,
+        forcefield: str,
         ph: float, 
         water_model: str,
         padding: float, 
@@ -62,8 +62,12 @@ def solvate_and_minimize_system(
         temperature: float,
         timestep: float
 ):
+    logger.info("Loading force field and water model...")
     forcefield = ForceField(forcefield, water_model)
+    
     modeller = Modeller(fixer.topology, fixer.positions)
+
+    logger.info(f"Adding hydrogens at pH {ph}...")
     modeller.addHydrogens(forcefield, pH=ph)
 
     logger.info("Adding solvent and ions...")
@@ -100,8 +104,8 @@ def solvate_and_minimize_system(
     with open(output_pdb, 'w') as f:
         PDBFile.writeFile(modeller.topology, positions, f)
 
-    logger.info(f"Writing Gromacs files to {gmx_prefix}.gro/.top")
-    structure = pmd.openmm.load_topology(modeller.topology, system=system, xyz=positions)
+    logger.info(f"Writing Gromacs files to {gmx_prefix}.gro and {gmx_prefix}.top")
+    structure = pmd.openmm.load_topology(modeller.topology, system, positions)
     structure.save(f"{gmx_prefix}.top", overwrite=True)
     structure.save(f"{gmx_prefix}.gro", overwrite=True)
 
