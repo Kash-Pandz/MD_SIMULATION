@@ -121,7 +121,7 @@ def main():
     ligand_pdb = extract_ligand(complex_file)
     lig_mol2, lig_frcmod = prepare_ligand(ligand_pdb, charge=args.charge)
 
-    logger.info("Step 3: Building system with tleap")
+    logger.info("Step 3: Building system with tleap...")
     tleap_in = write_tleap(protein_pdb, lig_mol2, lig_frcmod)
     run_cmd(["tleap", "-f", tleap_in])
 
