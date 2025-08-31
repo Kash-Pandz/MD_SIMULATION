@@ -29,18 +29,6 @@ def run_cmd(cmd, cwd=None, shell=False):
                             stdout=sys.stdout, stderr=sys.stderr)
 
 
-def protonate_protein(input_pdb: str, output_pdb: str = "prot_propka.pdb", pH: float = 7.0):
-    logger.info(f"Protonating protein at pH {pH} using pdb2pqr (PropKa)...")
-    run_cmd([
-        "pdb2pqr",
-        "--ff=AMBER",
-        f"--with-ph={pH}",
-        input_pdb,
-        output_pdb
-    ])
-    return output_pdb
-
-
 def prepare_protein(input_pdb: str, output_pdb: str = "prot_p4a.pdb") -> str:
     logger.info("Cleaning protein with pdb4amber...")
     run_cmd([
