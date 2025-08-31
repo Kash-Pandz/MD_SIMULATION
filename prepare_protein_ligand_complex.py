@@ -85,7 +85,7 @@ def prepare_ligand(ligand_pdb: str, charge: int = 0, resn: str = "LIG"):
     return final_mol2, frcmod
 
 
-def write_tleap(protein_pdb: str, lig_mol2: str, lig_frcmod: str, output: str = "tleap.in") -> str:
+def write_tleap(protein_pdb: str, lig_mol2: str, lig_frcmod: str, resn: str = "LIG", output: str = "tleap.in") -> str:
     tleap_script = f"""
 source leaprc.protein.ff14SB
 source leaprc.gaff2
@@ -93,9 +93,9 @@ source leaprc.water.tip3p
 
 loadamberparams {lig_frcmod}
 protein = loadPDB {protein_pdb}
-LIG = loadmol2 {lig_mol2}
+{resn} = loadmol2 {lig_mol2}
 
-system = combine {{LIG protein}}
+system = combine {{{resn} protein}}
 savepdb system system.dry.pdb
 
 check system
@@ -118,7 +118,7 @@ def main():
     args = parse_args()
     configure_logging(args.verbose)
 
-    complex_file = str(args.input_pdb.resolve())
+    complex_file = str(Path(args.input_pdb).resolve())
     
     logger.info("Step 1: Protein preparation...")
     propka_pdb = protonate_protein(complex_file, pH=args.ph)
@@ -126,10 +126,10 @@ def main():
     
     logger.info("Step 2: Ligand preparation...")
     ligand_pdb = extract_ligand(complex_file, resn=args.ligand_resname)
-    lig_mol2, lig_frcmod = prepare_ligand(ligand_pdb, charge=args.ligand_charge)
+    lig_mol2, lig_frcmod = prepare_ligand(ligand_pdb, resn=args.ligand_resname, charge=args.ligand_charge)
 
     logger.info("Step 3: Building system with tleap...")
-    tleap_in = write_tleap(protein_pdb, lig_mol2, lig_frcmod)
+    tleap_in = write_tleap(protein_pdb, lig_mol2, lig_frcmod, resn=args.ligand_resname)
     run_cmd(["tleap", "-f", tleap_in])
 
 
