@@ -7,7 +7,7 @@ Running MD simulations on protein-only and protein-ligand systems using a combin
 
 ### protein-only system
 
-`python prepare_protein_only_system.py --input_pdb {protein.pdb}
+`python prepare_protein_only_system.py --input_pdb {protein.pdb}'
 
 
 
