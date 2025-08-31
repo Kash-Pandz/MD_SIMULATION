@@ -3,6 +3,9 @@ import subprocess
 import sys
 from pathlib import Path
 from loguru import logger
+from openmm import LangevinMiddleIntegrator, unit
+from openmm.app import AmberPrmtopFile, AmberInpcrdFile, Simulation, PME, HBonds, PDBFile
+import parmed as pmd
 
 
 def parse_args():
@@ -11,6 +14,10 @@ def parse_args():
     parser.add_argument("--ligand_resname", default="LIG", help="Ligand resname")
     parser.add_argument("--ligand_charge", type=int, default=0, help="Net charge of ligand")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
+    parser.add_argument("--do_minimise", action="store_true", help="Run energy minimisation with OpenMM")
+    parser.add_argument("--gmx_gro", type=str, default="system.gro", help="Output GROMACS (.gro) file")
+    parser.add_argument("--gmx_top", type=str, default="system.top", help="Output GROMACS (.top) file")
+    parser.add_argument("--min_pdb", type=str, default="em.pdb", help="Optional energy minimised file")
     return parser.parse_args()
 
 
@@ -103,6 +110,39 @@ quit
     return output
 
 
+def minimize_and_convert_to_gromacs(prmtop_file: str, inpcrd_file: str, gmx_gro: str, gmx_top: str, pdb_out: str = None):
+    logger.info("Loading Amber file for energy minimisation")
+    inpcrd = AmberInpcrdFile(inpcrd_file)
+    prmtop = AmberPrmtopFile(prmtop_file, periodicBoxVectors=inpcrd.boxVectors)
+
+    system = prmtop.createSystem(
+        nonbondedMethod=PME,
+        nonbondedCutoff=1.0 * unit.nanometer,
+        constraints=HBonds
+    )
+
+    integrator = LangevinMiddleIntegrator(300*unit.kelvin, 1/unit.picosecond, 0.002*unit.picoseconds)
+    simulation = Simulation(prmtop.topology, system, integrator)
+    simulation.context.setPositions(inpcrd.positions)
+
+    logger.info("Minimizing energy...")
+    simulation.minimizeEnergy()
+    state = simulation.context.getState(getPositions=True)
+    positions = state.getPositions()
+
+    if min_pdb:
+        logger.info(f"Writing minimized PDB to {min_pdb}")
+    with open(min_pdb, 'w') as f:
+        PDBFile.writeFile(simulation.topology, positions, f)
+
+    logger.info(f"Writing Gromacs files to {gmx_prefix}.gro and {gmx_prefix}.top")
+    structure = pmd.openmm.load_topology(simulation.topology, system, positions)
+    structure.save(gmx_top, overwrite=True)
+    structure.save(gmx_gro, overwrite=True)
+
+    logger.success(f"System prepared and Gromacs files written.")
+
+
 
 def main():
     args = parse_args()
@@ -120,6 +160,15 @@ def main():
     logger.info("Step 3: Building system with tleap...")
     tleap_in = write_tleap(protein_pdb, lig_mol2, lig_frcmod, resn=args.ligand_resname)
     run_cmd(["tleap", "-f", tleap_in])
+
+    if args.do_minimise:
+        logger.info("Step 4: Minimizing and converting to GROMACS...")
+        minimize_and_convert_to_gromacs("system.prmtop", 
+                                        "system.inpcrd",
+                                        gmx_gro=args.gmx_gro, 
+                                        gmx_top=args.gmx_top,
+                                        min_pdb=args.min_pdb
+                                       )
 
 
 if __name__ == "__main__":
