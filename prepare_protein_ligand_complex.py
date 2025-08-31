@@ -59,7 +59,7 @@ def extract_ligand(complex_pdb: str, output_pdb: str = "LIG_final.pdb", resn: st
 
 def prepare_ligand(ligand_pdb: str, charge: int = 0, resn: str = "LIG"):
     logger.info("Protonating ligand...")
-    h_pdb = f"{resid}_H.pdb
+    h_pdb = f"{resid}_H.pdb"
     run_cmd(["obabel", "-ipdb", ligand_pdb, "-opdb", "-O", "h_pdb", "-h"])
 
     logger.info("Running antechamber (SYBYL cleanup)...")
