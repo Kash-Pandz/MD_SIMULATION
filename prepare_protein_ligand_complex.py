@@ -170,6 +170,5 @@ def main():
                                         min_pdb=args.min_pdb
                                        )
 
-
 if __name__ == "__main__":
     main()
