@@ -16,7 +16,7 @@ The following command can be used:
 
 ### protein-ligand system
 
-The `python prepare_protein_ligand_complex.py` script allows a protein-ligand system to be prepared, minimised and comnverted to gromacs format. The ligand AMBER FF parameters are derived using antechamber.
+The `python prepare_protein_ligand_complex.py` script allows a protein-ligand system to be setup, minimised and converted to gromacs format. The ligand AMBER FF parameters are derived using antechamber.
 
 The following command can be used:
 
