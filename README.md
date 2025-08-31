@@ -5,7 +5,7 @@
 Running MD simulations on protein-only and protein-ligand systems using a combination of OpenMM and Gromacs.
 
 
-### protein-only system
+### protein-only system preparation 
 
 The `prepare_protein_only_system.py` script allows a protein structure to be corrected, minimised and converted to gromacs format. An AMBER FF was used but this can be replaced with a CHARMM FF.
 
