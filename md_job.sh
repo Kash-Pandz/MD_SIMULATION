@@ -3,16 +3,16 @@
 #SBATCH --output=gmx_md_%j.out
 #SBATCH --error=gmx_md_%j.err
 #SBATCH --time=48:00:00
-#SBATCH --partition=hc24rs   
-#SBATCH --nodes=2      
-#SBATCH --ntasks-per-node=44 
-#SBATCH --cpus-per-task=1
+#SBATCH --partition=ndv5  
+#SBATCH --nodes=1      
+#SBATCH --ntasks-per-node=8
+#SBATCH --cpus-per-task=14
 #SBATCH --exclusive
 
 # Load modules 
 module purge
 module load gcc mpi
-module load gromacs/2025.3
+module load gcc cuda/12.4 openmpi gromacs/2025.3-cuda
 
 GMX="srun gmx_mpi"
 
