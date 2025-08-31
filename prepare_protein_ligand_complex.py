@@ -8,7 +8,6 @@ from loguru import logger
 def parse_args():
     parser = argparse.ArgumentParser(description="Prepare protein-ligand system.")
     parser.add_argument("--input_pdb", required=True, help="Input protein-ligand complex")
-    parser.add_argument("--ph", type=float, default=7.0, help="pH for protein")
     parser.add_argument("--ligand_resname", default="LIG", help="Ligand resname")
     parser.add_argument("--ligand_charge", type=int, default=0, help="Net charge of ligand")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
@@ -47,17 +46,18 @@ def prepare_protein(input_pdb: str, output_pdb: str = "prot_p4a.pdb") -> str:
     run_cmd([
         "pdb4amber",
         "-i", input_pdb,
-        "-o", output_pdb
+        "-o", output_pdb,
+        "--reduce"
     ])
     return output_pdb
 
 
 def extract_ligand(complex_pdb: str, resn: str) -> str:
-    output_pdb = f"{resn}_final.pdb
+    output_pdb = f"{resn}_final.pdb"
     logger.info(f"Extracting ligand {resn} from complex...")
     run_cmd(f"awk '$4==\"{resn}\" {{print $0}}' {complex.pdb} > {output_pdb}", shell=True)
     return output_pdb
-
+    
 
 def prepare_ligand(ligand_pdb: str, charge: int = 0, resn: str = "LIG"):
     h_pdb = f"{resn}_H.pdb"
@@ -81,7 +81,7 @@ def prepare_ligand(ligand_pdb: str, charge: int = 0, resn: str = "LIG"):
     frcmod = f"{resn}.frcmod"
     logger.info("Running parmchk2...")
     run_cmd([
-        "parmchk2", "-i", final.mol2, "-f", "mol2", "-o", frcmod
+        "parmchk2", "-i", final_mol2, "-f", "mol2", "-o", frcmod
     ])
     
     return final_mol2, frcmod
@@ -120,14 +120,13 @@ def main():
     args = parse_args()
     configure_logging(args.verbose)
 
-    complex_file = str(Path(args.input_pdb).resolve())
+    complex = str(Path(args.input_pdb).resolve())
     
     logger.info("Step 1: Protein preparation...")
-    propka_pdb = protonate_protein(complex_file, pH=args.ph)
-    protein_pdb = prepare_protein(propka_pdb)
+    protein_pdb = prepare_protein(complex)
     
     logger.info("Step 2: Ligand preparation...")
-    ligand_pdb = extract_ligand(complex_file, resn=args.ligand_resname)
+    ligand_pdb = extract_ligand(complex, resn=args.ligand_resname)
     lig_mol2, lig_frcmod = prepare_ligand(ligand_pdb, resn=args.ligand_resname, charge=args.ligand_charge)
 
     logger.info("Step 3: Building system with tleap...")
