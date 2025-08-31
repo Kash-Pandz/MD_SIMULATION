@@ -26,14 +26,15 @@ def configure_logging(verbose: bool):
 
 def run_cmd(cmd, cwd=None, shell=False):
     logger.debug(f"Running command: {' '.join(cmd) if isinstance(cmd, list) else cmd}")
-    result = subprocess.run(cmd, cwd=cwd, check=True, shell=shell)
+    result = subprocess.run(cmd, cwd=cwd, shell=shell, check=True,
+                            stdout=sys.stdout, stderr=sys.stderr)
 
 
 def protonate_protein(input_pdb: str, output_pdb: str = "prot_propka.pdb", pH: float = 7.0):
     logger.info(f"Protonating protein at pH {pH} using pdb2pqr (PropKa)...")
     run_cmd([
         "pdb2pqr",
-        "--ff=amber",
+        "--ff=AMBER",
         f"--with-ph={pH}",
         input_pdb,
         output_pdb
@@ -51,33 +52,34 @@ def prepare_protein(input_pdb: str, output_pdb: str = "prot_p4a.pdb") -> str:
     return output_pdb
 
 
-def extract_ligand(complex_pdb: str, output_pdb: str = "LIG_final.pdb", resn: str = "LIG") -> str:
+def extract_ligand(complex_pdb: str, resn: str) -> str:
+    output_pdb = f"{resn}_final.pdb
     logger.info(f"Extracting ligand {resn} from complex...")
-    run_cmd(f"grep '^HETATM' {complex_pdb} | awk '{{if ($4==\"{resn}\") print $0}}' > {output_pdb}", shell=True)
+    run_cmd(f"awk '$4==\"{resn}\" {{print $0}}' {complex.pdb} > {output_pdb}", shell=True)
     return output_pdb
 
 
 def prepare_ligand(ligand_pdb: str, charge: int = 0, resn: str = "LIG"):
+    h_pdb = f"{resn}_H.pdb"
     logger.info("Protonating ligand...")
-    h_pdb = f"{resid}_H.pdb"
     run_cmd(["obabel", "-ipdb", ligand_pdb, "-opdb", "-O", "h_pdb", "-h"])
 
+    sybl_mol2 = f"{resn}_sybl.mol2"
     logger.info("Running antechamber (SYBYL cleanup)...")
-    sybl_mol2 = f"{resid}_sybl.mol2"
     run_cmd([ 
         "antechamber", "-i", h_pdb, "-fi", "pdb", "-o", sybl_mol2,
         "-fo", "mol2", "-j", "5", "-at", "sybyl", "-dr", "no", "-s", "2"
     ])
     
+    final_mol2 = f"{resn}.mol2"
     logger.info("Running antechamber (GAFF2 + charges)...")
-    final_mol2 = f"{resid}.mol2"
     run_cmd([
         "antechamber", "-i", sybl_mol2, "-fi", "mol2", "-o", final.mol2, "-fo", "mol2",
         "-at", "gaff2", "-c", "bcc", "-s", "2", "-rn", resn, "-nc", str(charge)
     ])
-    
+
+    frcmod = f"{resn}.frcmod"
     logger.info("Running parmchk2...")
-    frcmod = f"{resid}.frcmod"
     run_cmd([
         "parmchk2", "-i", final.mol2, "-f", "mol2", "-o", frcmod
     ])
@@ -85,7 +87,7 @@ def prepare_ligand(ligand_pdb: str, charge: int = 0, resn: str = "LIG"):
     return final_mol2, frcmod
 
 
-def write_tleap(protein_pdb: str, lig_mol2: str, lig_frcmod: str, resn: str = "LIG", output: str = "tleap.in") -> str:
+def write_tleap(protein_pdb: str, lig_mol2: str, lig_frcmod: str, resn: str, output: str = "tleap.in") -> str:
     tleap_script = f"""
 source leaprc.protein.ff14SB
 source leaprc.gaff2
