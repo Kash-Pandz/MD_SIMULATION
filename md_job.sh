@@ -5,30 +5,31 @@
 #SBATCH --time=48:00:00
 #SBATCH --partition=ndv5  
 #SBATCH --nodes=1      
-#SBATCH --ntasks-per-node=8
-#SBATCH --cpus-per-task=14
-#SBATCH --exclusive
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=64
+#SBATCH --gpus=1
+
 
 # Load modules 
 module purge
-module load gcc mpi
-module load gcc cuda/12.4 openmpi gromacs/2025.3-cuda
+module load gcc cuda/12.4 openmpi
+module load gromacs/2025.3-cuda
 
 GMX="srun gmx_mpi"
 
 echo "Job started on $(date)"
-echo "Running on $SLURM_NNODES nodes with $SLURM_NTASKS tasks"
+echo "Running on $SLURM_NNODES node(s), $SLURM_NTASKS task(s), $SLURM_CPUS_PER_TASK CPU threads, $SLURM_GPUS GPU(s)"
 
 # NVT equilibration 
 gmx grompp -f nvt.mdp -c SYSTEM_EM.gro -r SYSTEM_EM.gro -p SYSTEM.top -o nvt.tpr
-$GMX mdrun -deffnm nvt
+$GMX mdrun -deffnm nvt -ntmpi 1 -ntomp $SLURM_CPUS_PER_TASK -pin on -gpu_id 0
 
 # NPT equilibration 
 gmx grompp -f npt.mdp -c nvt.gro -r nvt.gro -t nvt.cpt -p SYSTEM.top -o npt.tpr
-$GMX mdrun -deffnm nvt
+$GMX mdrun -deffnm npt -ntmpi 1 -ntomp $SLURM_CPUS_PER_TASK -pin on -gpu_id 0
 
 # Production MD
 gmx grompp -f md.mdp -c npt.gro -r npt.gro -t npt.cpt -p SYSTEM.top -o md_rep.tpr
-$GMX mdrun -deffnm md_rep -cpi -append
+$GMX mdrun -deffnm md_rep -cpi -append -ntmpi 1 -ntomp $SLURM_CPUS_PER_TASK -pin on -gpu_id 0
 
 echo "Job finished on $(date)"
