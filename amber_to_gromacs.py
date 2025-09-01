@@ -34,31 +34,10 @@ def minimise_and_convert_to_gromacs(prmtop_file: str, inpcrd_file: str, gmx_gro:
         constraints=Hbonds
     )
 
-    integrator = LangevinMiddleIntegrator(300 * unit.kelvin, 1 / unit.picosecond, 0.002 * unit.picoseconds)
-    
-  
-    
-  
-
-
-
-
-
-
-
-def minimize_and_convert_to_gromacs(prmtop_file: str, inpcrd_file: str, gmx_gro: str, gmx_top: str, min_pdb: str = None):
-    logger.info("Loading Amber files for energy minimisation")
-    inpcrd = AmberInpcrdFile(inpcrd_file)
-    prmtop = AmberPrmtopFile(prmtop_file, periodicBoxVectors=inpcrd.boxVectors)
-
-    system = prmtop.createSystem(
-        nonbondedMethod=PME,
-        nonbondedCutoff=1.0 * unit.nanometer,
-        constraints=HBonds
-    )
-
     integrator = LangevinMiddleIntegrator(
-        300 * unit.kelvin, 1 / unit.picosecond, 0.002 * unit.picoseconds
+        300 * unit.kelvin, 
+        1 / unit.picosecond, 
+        0.002 * unit.picoseconds
     )
     simulation = Simulation(prmtop.topology, system, integrator)
     simulation.context.setPositions(inpcrd.positions)
@@ -78,6 +57,21 @@ def minimize_and_convert_to_gromacs(prmtop_file: str, inpcrd_file: str, gmx_gro:
     structure.save(gmx_top, overwrite=True)
     structure.save(gmx_gro, overwrite=True)
 
+    logger.info("AMBER to GROMACS complete.")
 
+  
+def main():
 
+    args= parser.parser_args()
+    configure_logging(args.verbose)
 
+    minimise_and_convert_to_gromacs(
+        prmtop_file=args.prmtop,
+        inpcrd_file=args.inpcrd,
+        gmx_gro=args.gmx_gro,
+        gmx_top=args.gmx_top,
+        min_pdb=args.min_pdb
+    )
+
+if __name__ == "__main__":
+    main()
