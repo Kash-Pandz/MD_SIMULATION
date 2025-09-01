@@ -28,3 +28,5 @@ The AMBER prmtop and inpcrd files can then be converted into GROMACS using the a
 
 This will generate SYSTEM.gro, SYSTEM.top, LIG.itp files. 
 
+Alternatively, use `amber_to_gromacs.py` to convert the .prmtop and .inpcrd files to GROMACS format using parmed. N.B Manual inspection and manipulation is required for generated .gro and .top files.
+
