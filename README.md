@@ -18,8 +18,13 @@ The following command can be used:
 
 The `python prepare_protein_ligand_complex.py` script allows a protein-ligand system to be setup, minimised and converted to gromacs format. The ligand AMBER FF parameters are derived using antechamber.
 
-The following command can be used:
+The following command can be used to obtain the AMBER prmtop and inpcrd files:
 
-`python prepare_protein_ligand_complex.py --input_pdb "INPUT_COMPLEX.pdb", --ligand_resname "LIG", --ligand_charge 0, --do_minimise, --gmx_gro "system_EM.gro", --gmx_top "system_EM.top", --min_pdb "EM.pdb" --verbose`
+`python prepare_protein_ligand_complex.py --input_pdb "INPUT_COMPLEX.pdb", --ligand_resname "LIG", --ligand_charge 0, --verbose`
 
+The AMBER prmtop and inpcrd files can then be converted into GROMACS using the acpype command:
+
+`acpype -p SYSTEM.prmtop -x SYSTEM.inpcrd -o gmx`
+
+This will generate .gro, .top, LIG.itp files. 
 
