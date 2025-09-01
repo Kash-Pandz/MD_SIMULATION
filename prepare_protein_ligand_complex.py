@@ -103,7 +103,6 @@ quit
     return output
 
 
-
 def main():
     args = parse_args()
     configure_logging(args.verbose)
