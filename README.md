@@ -26,5 +26,5 @@ The AMBER prmtop and inpcrd files can then be converted into GROMACS using the a
 
 `acpype -p SYSTEM.prmtop -x SYSTEM.inpcrd -o gmx`
 
-This will generate .gro, .top, LIG.itp files. 
+This will generate SYSTEM.gro, SYSTEM.top, LIG.itp files. 
 
