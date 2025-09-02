@@ -83,6 +83,7 @@ def apply_restraint(system, topology, positions, k=0.0, chain_indices=None, mode
 
 
 ### Energy Minimisation ###
+
 def run_min(topology, positions, temperature, min_prefix, restraint_k=0.0, platform_name="CPU", platform_props=None):
     if platform_props is None:
         platform_props = {}
@@ -100,6 +101,7 @@ def run_min(topology, positions, temperature, min_prefix, restraint_k=0.0, platf
 
 
 ### NVT Equilibration ###
+
 def run_nvt(topology, positions, velocities, nvt_stages, platform_name="CPU", platform_props=None):
     if platform_props is None:
         platform_props = {}
@@ -127,6 +129,7 @@ def run_nvt(topology, positions, velocities, nvt_stages, platform_name="CPU", pl
 
 
 ### NPT Equilibration ###
+
 def run_npt(topology, positions, velocities, steps, temperature=300, restraint_k=0.2, timestep=0.002, platform_name="CPU", platform_props=None, checkpoint_file=None):
     if platform_props is None:
         platform_props = {}
@@ -158,6 +161,7 @@ def run_npt(topology, positions, velocities, steps, temperature=300, restraint_k
 
 
 ### Production NPT ###
+
 def run_prod(topology, positions, velocities, steps, temperature=300, timestep=0.002, platform_name="CPU", platform_props=None, checkpoint_file=None):
     if platform_props is None:
         platform_props = {}
