@@ -1,5 +1,5 @@
 import argparse
-from loguru import logger 
+from loguru import logger
 import parmed as pmd
 import openmm as mm
 from openmm import app, unit
@@ -11,7 +11,6 @@ from openmm.app import (
     AmberPrmtopFile,
     AmberInpcrdFile,
 )
-from openmm import PlatAndersenThermostat, MonteCarloBarostat
 
 
 def parse_args():
@@ -23,32 +22,33 @@ def parse_args():
     parser.add_argument("--checkpoint_npt", default="npt.chk", help="Checkpoint file for NPT equilibration")
     parser.add_argument("--checkpoint_prod", default="prod.chk", help="Checkpoint file for production run")
     parser.add_argument("--nvt_steps", nargs=3, type=int, default=[100000, 100000, 100000],
-                        help="Number of steps for each NVT stage (3 integers, e.g., 100000 100000 100000)")
+                        help="Number of steps for each NVT stage (3 integers)")
     parser.add_argument("--npt_steps", type=int, default=500000, help="Number of steps for NPT equilibration")
     parser.add_argument("--prod_steps", type=int, default=50000000, help="Number of steps for production run")
     return parser.parse_args()
 
 
 def load_amber_files(prmtop, inpcrd):
-    topology = app.AmberPrmtopFile(prmtop)
-    coordinates = app.AmberInpcrdFile(inpcrd, periodicBoxVectors=inpcrd.boxVectors))
+    topology = AmberPrmtopFile(prmtop)
+    coordinates = AmberInpcrdFile(inpcrd)
+    if coordinates.boxVectors is not None:
+        coordinates = AmberInpcrdFile(inpcrd, periodicBoxVectors=coordinates.boxVectors)
     return topology, coordinates
 
 
 def build_system(topology):
     return topology.createSystem(
-        nonbondedMethod=app.PME, 
-        nonbondedCutoff=1*unit.nanometer, 
+        nonbondedMethod=app.PME,
+        nonbondedCutoff=1*unit.nanometer,
         constraints=app.HBonds
     )
 
 
-def set_integrator(temperature, friction=1/unit.picosecond, timestep=0.002*unit.picoseconds):
-    return mm.LangevinMiddleIntegrator(temperature*unit.kelvin, friction, timestep)
+def set_integrator(temperature, friction=1/unit.picosecond, timestep=0.002):
+    return mm.LangevinMiddleIntegrator(temperature*unit.kelvin, friction, timestep*unit.picoseconds)
 
 
 def apply_restraint(system, topology, positions, k=0.0, chain_indices=None, mode="all"):
-
     if k <= 0.0:
         return None
 
@@ -60,8 +60,8 @@ def apply_restraint(system, topology, positions, k=0.0, chain_indices=None, mode
 
     chains = list(topology.topology.chains())
     if chain_indices is None:
-      chain_indices = range(len(chains))
- 
+        chain_indices = range(len(chains))
+
     n_restrained = 0
     for chain_index in chain_indices:
         if chain_index >= len(chains):
@@ -72,44 +72,51 @@ def apply_restraint(system, topology, positions, k=0.0, chain_indices=None, mode
                 continue
             if mode == "backbone" and atom.name not in ("CA", "C", "N", "O"):
                 continue
-            restraint.addParticle(atom.index, positions[atom.index].value_in_unit(unit.nanometer))
+            pos = positions[atom.index].value_in_unit(unit.nanometer)
+            restraint.addParticle(atom.index, pos.tolist())
             n_restrained += 1
 
-    system.addForce(restraint)
-    logger.info(f"Applied restraints to {n_restrained} atoms (mode={mode}) with k={k:.2f} kcal/mol/nm^2")
+    if n_restrained > 0:
+        system.addForce(restraint)
+        logger.info(f"Applied restraints to {n_restrained} atoms (mode={mode}) with k={k:.2f} kcal/mol/nm²")
     return restraint
 
 
 ### Energy Minimisation ###
-
-def run_min(topology, positions, temperature, min_prefix, restraint_k=0.0, platformName="CPU", platformProps={}):
+def run_min(topology, positions, temperature, min_prefix, restraint_k=0.0, platform_name="CPU", platform_props=None):
+    if platform_props is None:
+        platform_props = {}
     system = build_system(topology)
     apply_restraint(system, topology, positions, k=restraint_k, mode="all")
     integrator = set_integrator(temperature)
-    platform = mm.Platform.getPlatformByName(platformName)
-    simulation = Simulation(topology.topology, system, integrator, platform, platformProps)
+    platform = mm.Platform.getPlatformByName(platform_name)
+    simulation = Simulation(topology.topology, system, integrator, platform=platform, platformProperties=platform_props)
     simulation.context.setPositions(positions)
     simulation.minimizeEnergy()
     state = simulation.context.getState(getPositions=True, getVelocities=True)
     with open(f"{min_prefix}_min.pdb", "w") as f:
-        app.PDBFile.writeFile(topology.topology, state.getPositions(), f)
+        PDBFile.writeFile(topology.topology, state.getPositions(), f)
     return simulation
 
 
 ### NVT Equilibration ###
-
-def run_nvt(topology, positions, velocities, nvt_stages, platform_name="CPU", platform_props={}):
+def run_nvt(topology, positions, velocities, nvt_stages, platform_name="CPU", platform_props=None):
+    if platform_props is None:
+        platform_props = {}
     state = None
     for i, (temp, steps, restraint_k) in enumerate(nvt_stages):
         system = build_system(topology)
         apply_restraint(system, topology, positions, k=restraint_k, mode="all")
         integrator = set_integrator(temp)
-        simulation = Simulation(topology.topology, system, integrator, mm.Platform.getPlatformByName(platform_name), platform_props)
+        platform = mm.Platform.getPlatformByName(platform_name)
+        simulation = Simulation(topology.topology, system, integrator, platform=platform, platformProperties=platform_props)
+        simulation.context.setPositions(positions)
         if velocities is not None:
             simulation.context.setVelocities(velocities)
         else:
             simulation.context.setVelocitiesToTemperature(temp*unit.kelvin)
-        simulation.reporters.append(StateDataReporter(f"NVT_stage{i+1}_{temp}K.log", 500, step=True, temperature=True, potentialEnergy=True, kineticEnergy=True))
+        simulation.reporters.append(StateDataReporter(f"NVT_stage{i+1}_{temp}K.log", 500,
+                                                      step=True, temperature=True, potentialEnergy=True, kineticEnergy=True))
         simulation.reporters.append(DCDReporter(f"NVT_stage{i+1}_{temp}K.dcd", 500))
         logger.info(f"NVT stage {i+1}: T={temp}K, restraint_k={restraint_k} kcal/mol/nm², steps={steps}")
         simulation.step(steps)
@@ -120,17 +127,20 @@ def run_nvt(topology, positions, velocities, nvt_stages, platform_name="CPU", pl
 
 
 ### NPT Equilibration ###
-
-def run_npt(topology, positions, velocities, steps, temperature=300, restraint_k=0.2, timestep=0.002, platform_name="CPU", platform_props={}, checkpoint_file=None):
+def run_npt(topology, positions, velocities, steps, temperature=300, restraint_k=0.2, timestep=0.002, platform_name="CPU", platform_props=None, checkpoint_file=None):
+    if platform_props is None:
+        platform_props = {}
     system = build_system(topology)
     apply_restraint(system, topology, positions, k=restraint_k, mode="all")
-    system.addForce(AndersenThermostat(temperature*unit.kelvin, 1/unit.picosecond))
-    system.addForce(MonteCarloBarostat(1*unit.bar, temperature*unit.kelvin))
-    integrator = set_integrator(temperature, timestep=timestep*unit.picoseconds)
-    simulation = Simulation(topology.topology, system, integrator, mm.Platform.getPlatformByName(platform_name), platform_props)
+    system.addForce(mm.MonteCarloBarostat(1*unit.bar, temperature*unit.kelvin))
+    integrator = set_integrator(temperature, timestep=timestep)
+    platform = mm.Platform.getPlatformByName(platform_name)
+    simulation = Simulation(topology.topology, system, integrator, platform=platform, platformProperties=platform_props)
     simulation.context.setPositions(positions)
     simulation.context.setVelocities(velocities)
-    simulation.reporters.append(StateDataReporter(f"NPT_{temperature}K.log", 500, step=True, temperature=True, potentialEnergy=True, kineticEnergy=True, volume=True, density=True, pressure=True))
+    simulation.reporters.append(StateDataReporter(f"NPT_{temperature}K.log", 500,
+                                                  step=True, temperature=True, potentialEnergy=True,
+                                                  kineticEnergy=True, volume=True, density=True, pressure=True))
     simulation.reporters.append(DCDReporter(f"NPT_{temperature}K.dcd", 500))
     if checkpoint_file:
         try:
@@ -148,16 +158,19 @@ def run_npt(topology, positions, velocities, steps, temperature=300, restraint_k
 
 
 ### Production NPT ###
-
-def run_prod(topology, positions, velocities, steps, temperature=300, timestep=0.002, platform_name="CPU", platform_props={}, checkpoint_file=None):
+def run_prod(topology, positions, velocities, steps, temperature=300, timestep=0.002, platform_name="CPU", platform_props=None, checkpoint_file=None):
+    if platform_props is None:
+        platform_props = {}
     system = build_system(topology)
-    system.addForce(AndersenThermostat(temperature*unit.kelvin, 1/unit.picosecond))
-    system.addForce(MonteCarloBarostat(1*unit.bar, temperature*unit.kelvin))
-    integrator = set_integrator(temperature, timestep=timestep*unit.picoseconds)
-    simulation = Simulation(topology.topology, system, integrator, mm.Platform.getPlatformByName(platform_name), platform_props)
+    system.addForce(mm.MonteCarloBarostat(1*unit.bar, temperature*unit.kelvin))
+    integrator = set_integrator(temperature, timestep=timestep)
+    platform = mm.Platform.getPlatformByName(platform_name)
+    simulation = Simulation(topology.topology, system, integrator, platform=platform, platformProperties=platform_props)
     simulation.context.setPositions(positions)
     simulation.context.setVelocities(velocities)
-    simulation.reporters.append(StateDataReporter(f"PROD_NPT_{temperature}K.log", 500, step=True, temperature=True, potentialEnergy=True, kineticEnergy=True, volume=True, density=True, pressure=True))
+    simulation.reporters.append(StateDataReporter(f"PROD_NPT_{temperature}K.log", 500,
+                                                  step=True, temperature=True, potentialEnergy=True,
+                                                  kineticEnergy=True, volume=True, density=True, pressure=True))
     simulation.reporters.append(DCDReporter(f"PROD_NPT_{temperature}K.dcd", 500))
     if checkpoint_file:
         try:
@@ -172,8 +185,8 @@ def run_prod(topology, positions, velocities, steps, temperature=300, timestep=0
             f.write(simulation.context.createCheckpoint())
         logger.info(f"Saved checkpoint {checkpoint_file}")
     return simulation.context.getState(getPositions=True, getVelocities=True)
-    
- 
+
+
 def main():
     args = parse_args()
     topology, coordinates = load_amber_files(args.prmtop, args.inpcrd)
@@ -199,14 +212,17 @@ def main():
 
     # NPT equilibration
     logger.info("Starting NPT equilibration...")
-    state = run_npt(topology, positions, velocities, steps=args.npt_steps, temperature=args.temperature, timestep=0.002, platform_name=args.platform, checkpoint_file=args.checkpoint_npt)
+    state = run_npt(topology, positions, velocities, steps=args.npt_steps, temperature=args.temperature,
+                    timestep=0.002, platform_name=args.platform, checkpoint_file=args.checkpoint_npt)
     positions = state.getPositions()
     velocities = state.getVelocities()
 
     # Production
     logger.info("Starting production NPT...")
-    run_prod(topology, positions, velocities, temperature=args.temperature, steps=args.prod_steps, timestep=0.002, platform_name=args.platform, checkpoint_file=args.checkpoint_prod)
+    run_prod(topology, positions, velocities, temperature=args.temperature, steps=args.prod_steps,
+             timestep=0.002, platform_name=args.platform, checkpoint_file=args.checkpoint_prod)
     logger.info("Production finished.")
+
 
 if __name__ == "__main__":
     main()
