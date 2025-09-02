@@ -30,3 +30,9 @@ This will generate SYSTEM.gro, SYSTEM.top, LIG.itp files.
 
 Alternatively, use `amber_to_gromacs.py` to convert the .prmtop and .inpcrd files to GROMACS format using parmed. N.B Manual inspection and manipulation is required for generated .gro and .top files.
 
+
+### MD simulation run
+
+MD simulations can be run using GROMACS (`gmx_md_job.sh`) or OpenMM (`openmm_sim.py`). Both scripts follow the same routine 1) energy minimisation 2) NVT equilibration 3) NPT equilibration 4) production MD.  
+
+
