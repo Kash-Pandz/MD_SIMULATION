@@ -152,9 +152,7 @@ def run_npt(topology, positions, velocities, steps, temperature=300, restraint_k
             logger.info(f"Loaded checkpoint {checkpoint_file}")
         except FileNotFoundError:
             logger.info(f"No checkpoint file found!.")
-    
     simulation.step(steps)
-    
     if checkpoint_file:
         with open(checkpoint_file, "wb") as f:
             f.write(simulation.context.createCheckpoint())
@@ -184,7 +182,7 @@ def run_prod(topology, positions, velocities, steps, temperature=300, timestep=0
                 simulation.context.loadCheckpoint(f.read())
             logger.info(f"Loaded checkpoint {checkpoint_file}")
         except FileNotFoundError:
-            logger.info(f"No checkpoint found, starting fresh.")
+            logger.info(f"No checkpoint file found!.")
     simulation.step(steps)
     if checkpoint_file:
         with open(checkpoint_file, "wb") as f:
