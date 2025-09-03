@@ -35,4 +35,13 @@ Alternatively, use `amber_to_gromacs.py` to convert the .prmtop and .inpcrd file
 
 MD simulations can be run using GROMACS (`gmx_md_job.sh`) or OpenMM (`openmm_sim.py`). Both scripts follow the same routine 1) energy minimisation 2) NVT equilibration 3) NPT equilibration 4) production MD.  
 
+### Fix PBC effects on md trajectories
+
+To fix PBC effects on the MD trajectories:
+
+#### protein-only system
+`./ fix_pbc.sh topol.tpr "" traj1.xtc traj2.xtc...`
+#### protein-ligand system
+```bash fix_pbc.sh topol.tpr LIG traj1.xtc traj2.xtc...```
+
 
