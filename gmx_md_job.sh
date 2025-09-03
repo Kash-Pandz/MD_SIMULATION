@@ -26,11 +26,11 @@ $GMX mdrun -deffnm em -ntmpi 1 -ntomp $SLURM_CPUS_PER_TASK -pin on -gpu_id 0
 
 # NVT equilibration 
 gmx grompp -f nvt.mdp -c SYSTEM_EM.gro -r SYSTEM_EM.gro -p SYSTEM.top -o nvt.tpr
-$GMX mdrun -deffnm nvt -ntmpi 1 -ntomp $SLURM_CPUS_PER_TASK -pin on -gpu_id 0
+$GMX mdrun -deffnm nvt -cpi -append -ntmpi 1 -ntomp $SLURM_CPUS_PER_TASK -pin on -gpu_id 0
 
 # NPT equilibration 
 gmx grompp -f npt.mdp -c nvt.gro -r nvt.gro -t nvt.cpt -p SYSTEM.top -o npt.tpr
-$GMX mdrun -deffnm npt -ntmpi 1 -ntomp $SLURM_CPUS_PER_TASK -pin on -gpu_id 0
+$GMX mdrun -deffnm npt -cpi -append -ntmpi 1 -ntomp $SLURM_CPUS_PER_TASK -pin on -gpu_id 0
 
 # Production MD
 gmx grompp -f md.mdp -c npt.gro -r npt.gro -t npt.cpt -p SYSTEM.top -o md_rep.tpr
