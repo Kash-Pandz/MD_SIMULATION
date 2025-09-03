@@ -8,7 +8,7 @@ for XTC in "$@"; do
     BASENAME=$(basename "$XTC" .xtc)
     
     if [[ -z "$LIG" ]]; then
-        echo "Protein System" | gmx trjconv -s "$TPR" -f "$XTC" \
+        echo 1 | gmx trjconv -s "$TPR" -f "$XTC" \
             -o "${BASENAME}_pbc.xtc" \
             -pbc nojump -pbc mol -center -ur compact -quiet
     else
@@ -17,7 +17,10 @@ r $LIG | Protein
 name 3 Prot_Lig
 q
 EOF
-        echo "Prot_Lig System" | gmx trjconv -s "$TPR" -f "$XTC" \
+
+        PROT_LIG=$(grep -w "prot_Lig" index.ndx | awk '{print $1}')
+
+        echo "$PROT_LIG" | gmx trjconv -s "$TPR" -f "$XTC" \
             -o "${BASENAME}_pbc.xtc" \
             -pbc nojump -pbc mol -center -ur compact -n index.ndx -quiet
         rm -f index.ndx
