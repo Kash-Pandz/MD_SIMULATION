@@ -1,0 +1,16 @@
+title       = AMBER steepest descent energy minimisation
+
+integrator      = steep       ; Algorithm (steepest descent minimization)
+emtol           = 1000.0      ; Stop minimization when max force < 1000 kJ/mol/nm
+emstep          = 0.01        ; Energy step size
+nsteps          = 50000       ; Maximum number of minimization steps
+
+; Neighbor searching
+nstlist         = 10          ; Frequency to update the neighbor list
+cutoff-scheme   = Verlet
+ns_type         = grid
+coulombtype     = PME         ; Particle Mesh Ewald for long-range electrostatics
+rcoulomb        = 1.0         ; Short-range electrostatic cutoff (nm)
+rvdw            = 1.0         ; Short-range van der Waals cutoff (nm)
+
+pbc             = xyz         ; Periodic boundary conditions in all directions
