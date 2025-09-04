@@ -3,7 +3,7 @@
 #SBATCH --output=gmx_md_%j.out
 #SBATCH --error=gmx_md_%j.err
 #SBATCH --time=48:00:00
-#SBATCH --partition=ndv5  
+#SBATCH --partition=nc40ads 
 #SBATCH --nodes=1      
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=40
