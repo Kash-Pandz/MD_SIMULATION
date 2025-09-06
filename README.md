@@ -66,7 +66,7 @@ gmx --version
 
 ## Procedure
 
-### protein-only system preparation 
+1. protein-only system preparation 
 
 The `prepare_protein_only_system.py` script allows a protein structure to be corrected, minimised and converted to gromacs format. An AMBER FF was used but this can be replaced with a CHARMM FF.
 
@@ -74,8 +74,9 @@ The following command can be used:
 
 `python prepare_protein_only_system.py --input_pdb "INPUT.pdb" --output_pdb "OUTPUT.pdb", --output_prefix "MD_SIM" --forcefield "amber14-all.xml", --ph 7.0, --water "amber14/tip3pfb.xml", --padding 1.0, --ionic_strength 0.15, --temperature 300.0, --timestep 2.0 --verbose`
 
+### OR
 
-### protein-ligand system preparation
+2. protein-ligand system preparation
 
 The `python prepare_protein_ligand_complex.py` script allows a protein-ligand system to be setup, minimised and converted to gromacs format. The ligand AMBER FF parameters are derived using antechamber.
 
@@ -92,7 +93,7 @@ This will generate SYSTEM.gro, SYSTEM.top, LIG.itp files.
 Alternatively, use `amber_to_gromacs.py` to convert the .prmtop and .inpcrd files to GROMACS format using parmed. N.B Manual inspection and manipulation is required for generated .gro and .top files.
 
 
-### MD simulation run
+3. MD simulation run
 
 MD simulations can be run using GROMACS (`gmx_md_job.sh`) or OpenMM (`openmm_sim.py`). Both scripts follow the same routine 1) energy minimisation 2) NVT equilibration 3) NPT equilibration 4) production MD.  
 
