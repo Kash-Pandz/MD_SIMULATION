@@ -4,6 +4,14 @@
 
 This repo contains a MD simulation code for protein-only and protein-ligand systems using OpenMM and Gromacs.
 
+## Installation
+1. Install Conda
+2. Clone this repository
+```bash
+git clone https://github.com/Kash-Pandz/MD_SIMULATION.git
+cd MD_SIMULATION
+
+
 
 ### protein-only system preparation 
 
