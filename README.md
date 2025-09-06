@@ -66,7 +66,7 @@ gmx --version
 
 ## Procedure
 
-1. protein-only system preparation 
+### 1. protein-only system preparation 
 
 The `prepare_protein_only_system.py` script allows a protein structure to be corrected, minimised and converted to gromacs format. An AMBER FF was used but this can be replaced with a CHARMM FF.
 
@@ -76,7 +76,7 @@ The following command can be used:
 
 ### OR
 
-2. protein-ligand system preparation
+### 2. protein-ligand system preparation
 
 The `python prepare_protein_ligand_complex.py` script allows a protein-ligand system to be setup, minimised and converted to gromacs format. The ligand AMBER FF parameters are derived using antechamber.
 
