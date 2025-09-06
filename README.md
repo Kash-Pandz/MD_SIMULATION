@@ -101,8 +101,12 @@ MD simulations can be run using GROMACS (`gmx_md_job.sh`) or OpenMM (`openmm_sim
 To fix PBC effects on the MD trajectories from GROMACS, use the ```fix_pbc.sh``` script.
 
 #### protein-only system
-``` bash utils/fix_gmx_pbc.sh topol.tpr "" traj1.xtc traj2.xtc...```
+``` bash 
+fix_gmx_pbc.sh topol.tpr "" traj1.xtc traj2.xtc...
+```
 #### protein-ligand system
-```bash utils/fix_gmx_pbc.sh topol.tpr LIG traj1.xtc traj2.xtc...```
+```bash
+fix_gmx_pbc.sh topol.tpr LIG traj1.xtc traj2.xtc...
+```
 
 
