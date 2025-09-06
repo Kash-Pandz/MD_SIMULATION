@@ -64,6 +64,7 @@ source /usr/local/gromacs/bin/GMXRC
 gmx --version
 ```
 
+## Procedure
 
 ### protein-only system preparation 
 
