@@ -10,6 +10,7 @@ This repo contains a MD simulation code for protein-only and protein-ligand syst
 ```bash
 git clone https://github.com/Kash-Pandz/MD_SIMULATION.git
 cd MD_SIMULATION
+```
 
 
 
