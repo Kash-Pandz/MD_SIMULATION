@@ -1,0 +1,24 @@
+name: openmm_sim
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - openmm=8.1.1
+  - cudatoolkit=12.2
+  - parmed=4.2.2
+  - mdtraj=1.10.3
+  - mdanalysis=2.8.0
+  - numpy=1.26.4
+  - scipy=1.14.1
+  - biopython=1.79
+  - biotite=1.1.0
+  - babel=2.14.0
+  - rdkit=2024.9.5
+  - ambertools=23.6
+  - acpype=2023.10.27
+  - matplotlib
+  - seaborn
+  - pandas
+  - loguru=0.7.3
+  - pip
