@@ -99,7 +99,7 @@ MD simulations can be run using GROMACS (`gmx_md_job.sh`) or OpenMM (`openmm_sim
 
 ### 4. Analysis
 
-#### Fix PBC effects on md trajectories
+##### Fix PBC effects on md trajectories
 
 To fix PBC effects on the MD trajectories from GROMACS, use the ```fix_pbc.sh``` script.
 
