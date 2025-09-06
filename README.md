@@ -5,6 +5,7 @@
 This repo contains a MD simulation code for protein-only and protein-ligand systems using OpenMM and Gromacs.
 
 ## Installation
+### OpenMM
 1. Install Conda
 2. Clone this repository
 ```bash
@@ -13,13 +14,55 @@ cd MD_SIMULATION
 ```
 3. Create the environment
 ```bash
-conda env create -f openmm_sim.yaml
+conda env create -f openmm.yaml
 ```
 4. Activate the environment
 ```bash
-conda activate openmm_md
+conda activate openmm_sim
 ```
+### GROMACS
 
+GROMACS from source can be compiled inside the `openmm_sim` conda environment.
+
+1. Install required system dependence
+```bash
+sudo apt-get update
+sudo apt-get install -y build-essential cmake git \
+    libfftw3-dev libgsl-dev mpi-default-bin mpi-default-dev
+```
+- `cmake`, `build-essential` for compilation tools
+- `libfftw3-dev` for Fourier transforms (required for GROMACS)
+- `libgsl-dev` for scientific libraries
+- `mpi-default-bin` and `mpi-default-dev` for MPI for parallel runs
+2. Download GROMACS from source
+```bash
+wget ftp://ftp.gromacs.org/gromacs/gromacs-2025.3.tar.gz
+tar xfz gromacs-2025.3.tar.gz
+cd gromacs-2025.3
+mkdir build && cd build
+```
+3. Configure build with GPU + MPI
+```bash
+cmake .. \
+  -DGMX_BUILD_OWN_FFTW=ON \
+  -DGMX_GPU=CUDA \
+  -DGMX_MPI=ON \
+  -DCMAKE_INSTALL_PREFIX=/usr/local/gromacs \
+  -DREGRESSIONTEST_DOWNLOAD=ON
+```
+4. Compile and install
+```bash
+make -j$(nproc)
+sudo make install
+```
+5. Load GROMACS environment
+```bash
+source /usr/local/gromacs/bin/GMXRC
+```
+6. Test Installation
+```bash
+gmx --version
+```
 
 
 ### protein-only system preparation 
