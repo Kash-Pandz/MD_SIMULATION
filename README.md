@@ -2,7 +2,7 @@
 
 ## Overview
 
-Running MD simulations on protein-only and protein-ligand systems using OpenMM and Gromacs.
+This repo contains a MD simulation code for protein-only and protein-ligand systems using OpenMM and Gromacs.
 
 
 ### protein-only system preparation 
