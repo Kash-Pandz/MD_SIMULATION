@@ -11,6 +11,14 @@ This repo contains a MD simulation code for protein-only and protein-ligand syst
 git clone https://github.com/Kash-Pandz/MD_SIMULATION.git
 cd MD_SIMULATION
 ```
+3. Create the environment
+```bash
+conda env create -f openmm_sim.yaml
+```
+4. Activate the environment
+```bash
+conda activate openmm_md
+```
 
 
 
