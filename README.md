@@ -72,7 +72,7 @@ The `prepare_protein_only_system.py` script allows a protein structure to be cor
 
 The following command can be used: 
 
-`python prepare_protein_only_system.py \ --input_pdb INPUT.pdb \ --output_pdb OUTPUT.pdb \ --output_prefix MD_SIM \ --forcefield amber14-all.xml \ --ph 7.0 \ --water amber14/tip3pfb.xml \ --padding 1.0 \ --ionic_strength 0.15 \ --temperature 300.0 \ --timestep 2.0 \ --verbose`
+`python prepare_protein_only_system.py --input_pdb INPUT.pdb, --output_pdb OUTPUT.pdb, --output_prefix MD_SIM, --forcefield amber14-all.xml, --ph 7.0, --water amber14/tip3pfb.xml, --padding 1.0, --ionic_strength 0.15, --temperature 300.0, --timestep 2.0, --verbose`
 
 ### OR
 
