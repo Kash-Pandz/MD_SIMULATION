@@ -22,7 +22,7 @@ conda activate openmm_sim
 ```
 ### GROMACS
 
-GROMACS from source can be compiled inside the `openmm_sim` conda environment.
+GROMACS from source can be compiled using the following: 
 
 1. Install required system dependence
 ```bash
