@@ -94,7 +94,7 @@ def run_min(topology, positions, temperature, min_prefix, restraint_k=0.0, platf
     simulation = Simulation(topology.topology, system, integrator, platform=platform, platformProperties=platform_props)
     simulation.context.setPositions(positions)
     simulation.minimizeEnergy()
-    state = simulation.context.getState(getPositions=True, getVelocities=True)
+    state = simulation.context.getState(getPositions=True)
     with open(f"{min_prefix}_min.pdb", "w") as f:
         PDBFile.writeFile(topology.topology, state.getPositions(), f)
     return simulation
