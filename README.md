@@ -98,9 +98,6 @@ Alternatively, use `amber_to_gromacs.py` to convert the .prmtop and .inpcrd file
 MD simulations can be run using GROMACS (`gmx_md_job.sh`) or OpenMM (`openmm_sim.py`). Both scripts follow the same routine 1) energy minimisation 2) NVT equilibration 3) NPT equilibration 4) production MD.
 
 
-### 4. MD simulation analysis
-
-
 
 
 ## MD trajectory PBC correction 
