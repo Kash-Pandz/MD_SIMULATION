@@ -24,20 +24,40 @@ def parse_args():
                         help="Number of steps for each NVT stage (3 integers)")
     parser.add_argument("--npt_steps", type=int, default=500000, help="Number of steps for NPT equilibration")
     parser.add_argument("--prod_steps", type=int, default=50000000, help="Number of steps for production run")
+    
     return parser.parse_args()
 
 
+def get_platform():
+    """Returns platform name and props for OpenMM. Uses CUDA if available, otherwise CPU."""
+    try:
+        platform = mm.Platform.getPlatformByName("CUDA")
+        platform_name = "CUDA"
+        platform_props = {
+            "precision": "mixed"
+            "device_index": "0"
+        }
+        logger.info("Using CUDA GPU plaform with mixed precision.")
+    except Exception:
+        platform_name = "CPU"
+        platform_props = {}
+        logger.info("CUDA GPU not found. Using CPU platform.")
+    return platform_name, platform_props
+        
+            
+### Load AMBER files ###
+
 def load_amber_files(prmtop, inpcrd):
-    """Parse AMBER topology and coordinate files."""
     topology = AmberPrmtopFile(prmtop)
     coordinates = AmberInpcrdFile(inpcrd)
     if coordinates.boxVectors is not None:
         coordinates = AmberInpcrdFile(inpcrd, periodicBoxVectors=coordinates.boxVectors)
     return topology, coordinates
+    
 
+### System preparation ###
 
 def build_system(topology):
-    """Build system."""
     return topology.createSystem(
         nonbondedMethod=app.PME,
         nonbondedCutoff=1*unit.nanometer,
@@ -48,7 +68,7 @@ def build_system(topology):
 def set_integrator(temperature, friction=1/unit.picosecond, timestep=0.002):
     """Initialise integrator.""""
     return mm.LangevinMiddleIntegrator(temperature*unit.kelvin, friction, timestep*unit.picoseconds)
-
+    
 
 def apply_restraint(system, topology, positions, k=0.0, chain_indices=None, mode="all"):
     """A function to apply atom group restraints.""" 
@@ -87,7 +107,7 @@ def apply_restraint(system, topology, positions, k=0.0, chain_indices=None, mode
 
 ### Energy Minimisation ###
 
-def run_min(topology, positions, temperature, min_prefix, restraint_k=0.0, platform_name="CPU", platform_props=None):
+def run_min(topology, positions, temperature, min_prefix, restraint_k=0.0, platform_name=None, platform_props=None):
     if platform_props is None:
         platform_props = {}
     system = build_system(topology)
@@ -196,6 +216,13 @@ def run_prod(topology, positions, velocities, steps, temperature=300, timestep=0
 
 def main():
     args = parse_args()
+
+    # Auto-detect CUDA if platform not specified
+    if args.platform.upper() == "CPU":
+        args.platform, platform_props = get_platform()
+    else:
+        platform_props = {}
+    
     topology, coordinates = load_amber_files(args.prmtop, args.inpcrd)
     positions = coordinates.positions
     velocities = None
@@ -203,8 +230,8 @@ def main():
     logger.info("Starting energy minimization...")
     sim = run_min(topology, positions, args.temperature, "min", restraint_k=5.0, platform_name=args.platform)
     state = sim.context.getState(getPositions=True, getVelocities=True)
-    positions = state.getPositions()
-    velocities = state.getVelocities()
+    positions, velocities = state.getPositions(), state.getVelocities()
+    logger.info(f"Energy minimisation finished")
 
     # NVT equilibration
     nvt_stages = [
@@ -214,11 +241,12 @@ def main():
     ]
     logger.info("Starting NVT equilibration...")
     state = run_nvt(topology, positions, velocities, nvt_stages, platform_name=args.platform)
-    positions = state.getPositions()
-    velocities = state.getVelocities()
+    positions, velocities = state.getPositions(), state.getVelocities()
+    logger.info(f"NVT equilibration finished")
 
     # NPT equilibration
     logger.info("Starting NPT equilibration...")
+    
     state = run_npt(topology, positions, velocities, steps=args.npt_steps, temperature=args.temperature,
                     timestep=0.002, platform_name=args.platform, checkpoint_file=args.checkpoint_npt)
     positions = state.getPositions()
@@ -228,7 +256,7 @@ def main():
     logger.info("Starting production NPT...")
     run_prod(topology, positions, velocities, temperature=args.temperature, steps=args.prod_steps,
              timestep=0.002, platform_name=args.platform, checkpoint_file=args.checkpoint_prod)
-    logger.info("Production finished.")
+    logger.info("Production finished")
 
 
 if __name__ == "__main__":
