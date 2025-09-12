@@ -1,6 +1,5 @@
 import argparse
 from loguru import logger
-import parmed as pmd
 import openmm as mm
 from openmm import app, unit
 from openmm.app import (
@@ -29,6 +28,7 @@ def parse_args():
 
 
 def load_amber_files(prmtop, inpcrd):
+    """Parse AMBER topology and coordinate files."""
     topology = AmberPrmtopFile(prmtop)
     coordinates = AmberInpcrdFile(inpcrd)
     if coordinates.boxVectors is not None:
@@ -37,6 +37,7 @@ def load_amber_files(prmtop, inpcrd):
 
 
 def build_system(topology):
+    """Build system."""
     return topology.createSystem(
         nonbondedMethod=app.PME,
         nonbondedCutoff=1*unit.nanometer,
@@ -45,10 +46,12 @@ def build_system(topology):
 
 
 def set_integrator(temperature, friction=1/unit.picosecond, timestep=0.002):
+    """Initialise integrator.""""
     return mm.LangevinMiddleIntegrator(temperature*unit.kelvin, friction, timestep*unit.picoseconds)
 
 
 def apply_restraint(system, topology, positions, k=0.0, chain_indices=None, mode="all"):
+    """A function to apply atom group restraints.""" 
     if k <= 0.0:
         return None
 
