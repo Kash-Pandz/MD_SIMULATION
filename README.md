@@ -106,11 +106,11 @@ To fix PBC effects on the MD trajectories from GROMACS, use the ```fix_pbc.sh```
 
 - protein-only system
 ``` bash 
-fix_gmx_pbc.sh topol.tpr "" traj1.xtc traj2.xtc...
+utils/fix_gmx_pbc.sh topol.tpr "" traj1.xtc traj2.xtc...
 ```
 - protein-ligand system
 ```bash
-fix_gmx_pbc.sh topol.tpr LIG traj1.xtc traj2.xtc...
+utils/fix_gmx_pbc.sh topol.tpr LIG traj1.xtc traj2.xtc...
 ```
 
 
