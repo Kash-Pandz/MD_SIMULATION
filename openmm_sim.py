@@ -249,8 +249,8 @@ def main():
     
     state = run_npt(topology, positions, velocities, steps=args.npt_steps, temperature=args.temperature,
                     timestep=0.002, platform_name=args.platform, checkpoint_file=args.checkpoint_npt)
-    positions = state.getPositions()
-    velocities = state.getVelocities()
+    positions, velocities = state.getPositions(), state.getVelocities()
+    logger.info(f"NPT equilibration finished")
 
     # Production
     logger.info("Starting production NPT...")
