@@ -21,7 +21,7 @@ echo "Job started on $(date)"
 echo "Running on $SLURM_NNODES node(s), $SLURM_NTASKS task(s), $SLURM_CPUS_PER_TASK CPU threads, $SLURM_GPUS GPU(s)"
 
 # Energy minimisation
-gmx grompp -f em.mdp -c SYSTEM.gro -p SYSTEM.top -o em.tpr
+gmx grompp -f minim.mdp -c SYSTEM.gro -p SYSTEM.top -o em.tpr
 $GMX mdrun -deffnm em -ntmpi 1 -ntomp $SLURM_CPUS_PER_TASK -pin on -gpu_id 0
 
 # NVT equilibration 
@@ -33,7 +33,7 @@ gmx grompp -f npt.mdp -c nvt.gro -r nvt.gro -t nvt.cpt -p SYSTEM.top -o npt.tpr
 $GMX mdrun -deffnm npt -cpi -append -ntmpi 1 -ntomp $SLURM_CPUS_PER_TASK -pin on -gpu_id 0
 
 # Production MD
-gmx grompp -f md.mdp -c npt.gro -r npt.gro -t npt.cpt -p SYSTEM.top -o md_rep.tpr
+gmx grompp -f prod.mdp -c npt.gro -r npt.gro -t npt.cpt -p SYSTEM.top -o md_rep.tpr
 $GMX mdrun -deffnm md_rep -cpi -append -ntmpi 1 -ntomp $SLURM_CPUS_PER_TASK -pin on -gpu_id 0
 
 echo "Job finished on $(date)"
