@@ -140,9 +140,9 @@ def run_nvt(topology, positions, velocities, nvt_stages, platform_name="CPU", pl
             simulation.context.setVelocities(velocities)
         else:
             simulation.context.setVelocitiesToTemperature(temp*unit.kelvin)
-        simulation.reporters.append(StateDataReporter(f"NVT_stage{i+1}_{temp}K.log", 500,
+        simulation.reporters.append(StateDataReporter(f"NVT_stage{i+1}_{temp}K.log", 1000,
                                                       step=True, temperature=True, potentialEnergy=True, kineticEnergy=True))
-        simulation.reporters.append(DCDReporter(f"NVT_stage{i+1}_{temp}K.dcd", 500))
+        simulation.reporters.append(DCDReporter(f"NVT_stage{i+1}_{temp}K.dcd", 1000))
         logger.info(f"NVT stage {i+1}: T={temp}K, restraint_k={restraint_k} kcal/mol/nm², steps={steps}")
         simulation.step(steps)
         state = simulation.context.getState(getPositions=True, getVelocities=True)
@@ -164,10 +164,10 @@ def run_npt(topology, positions, velocities, steps, temperature=300, restraint_k
     simulation = Simulation(topology.topology, system, integrator, platform=platform, platformProperties=platform_props)
     simulation.context.setPositions(positions)
     simulation.context.setVelocities(velocities)
-    simulation.reporters.append(StateDataReporter(f"NPT_{temperature}K.log", 500,
+    simulation.reporters.append(StateDataReporter(f"NPT_{temperature}K.log", 1000,
                                                   step=True, temperature=True, potentialEnergy=True,
                                                   kineticEnergy=True, volume=True, density=True, pressure=True))
-    simulation.reporters.append(DCDReporter(f"NPT_{temperature}K.dcd", 500))
+    simulation.reporters.append(DCDReporter(f"NPT_{temperature}K.dcd", 1000))
     if checkpoint_file:
         try:
             with open(checkpoint_file, "rb") as f:
@@ -195,10 +195,10 @@ def run_prod(topology, positions, velocities, steps, temperature=300, timestep=0
     simulation = Simulation(topology.topology, system, integrator, platform=platform, platformProperties=platform_props)
     simulation.context.setPositions(positions)
     simulation.context.setVelocities(velocities)
-    simulation.reporters.append(StateDataReporter(f"PROD_NPT_{temperature}K.log", 500,
+    simulation.reporters.append(StateDataReporter(f"PROD_NPT_{temperature}K.log", 1000,
                                                   step=True, temperature=True, potentialEnergy=True,
                                                   kineticEnergy=True, volume=True, density=True, pressure=True))
-    simulation.reporters.append(DCDReporter(f"PROD_NPT_{temperature}K.dcd", 500))
+    simulation.reporters.append(DCDReporter(f"PROD_NPT_{temperature}K.dcd", 1000))
     if checkpoint_file:
         try:
             with open(checkpoint_file, "rb") as f:
