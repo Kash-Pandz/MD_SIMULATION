@@ -17,10 +17,7 @@ def parse_args():
 def configure_logging(verbose: bool):
     logger.remove()
     level = "DEBUG" if verbose else "INFO"
-    logger.add(sys.stderr,
-               level=level,
-               format = "<green>{time:HH:mm:ss}</green> | <cyan>{level}</cyan> | {message}"
-    )
+    logger.add(lambda msg: print(msg, end=""), level=level)
    
 
 def run_cmd(cmd, cwd=None, shell=False):
