@@ -108,6 +108,9 @@ To apply correction to Periodic Boundary Condition effects on the MD trajectorie
 ### OR
 ```bash utils/fix_gmx_pbc.sh topol.tpr LIG traj1.xtc traj2.xtc...```
 
-A python script ```apply_pbc_corr.py``` which utilises the transformations class in MDAnalysis is also available in the ```utils``` folder.
+
+A python script ```apply_pbc_corr.py``` which utilises the transformations class in MDAnalysis is also available in the ```utils``` folder. The script is run:
+
+`python apply_pbc_corr.py topol.tpr rep1.xtc rep2.xtc rep3.xtc` 
 
 
