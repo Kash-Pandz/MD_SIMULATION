@@ -102,14 +102,10 @@ MD simulations can be run using GROMACS (`gmx_md_job.sh`) or OpenMM (`openmm_sim
 
 ## MD trajectory PBC correction 
 
-To fix PBC effects on the MD trajectories from GROMACS, use the ```fix_pbc.sh``` script.
-
-###### protein-only system ######
+To apply correction to Periodic Boundary Condition effects on the MD trajectories from GROMACS, use the ```fix_pbc.sh``` script. See examples below:
 
 ```bash utils/fix_gmx_pbc.sh topol.tpr "" traj1.xtc traj2.xtc...```
-
-###### ligand-only system ######
-
+### OR
 ```bash utils/fix_gmx_pbc.sh topol.tpr LIG traj1.xtc traj2.xtc...```
 
 
