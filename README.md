@@ -100,7 +100,7 @@ MD simulations can be run using GROMACS (`gmx_md_job.sh`) or OpenMM (`openmm_sim
 
 ### 4. Analysis
 
-## MD trajectory PBC correction 
+##### MD trajectory PBC correction 
 
 To apply correction to Periodic Boundary Condition effects on the MD trajectories from GROMACS, use the ```fix_pbc.sh``` script. See examples below:
 
