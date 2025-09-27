@@ -98,7 +98,7 @@ Alternatively, use `amber_to_gromacs.py` to convert the .prmtop and .inpcrd file
 MD simulations can be run using GROMACS (`gmx_md_job.sh`) or OpenMM (`openmm_sim.py`). Both scripts follow the same routine 1) energy minimisation 2) NVT equilibration 3) NPT equilibration 4) production MD.
 
 
-
+### 4. Analysis
 
 ## MD trajectory PBC correction 
 
@@ -107,5 +107,7 @@ To apply correction to Periodic Boundary Condition effects on the MD trajectorie
 ```bash utils/fix_gmx_pbc.sh topol.tpr "" traj1.xtc traj2.xtc...```
 ### OR
 ```bash utils/fix_gmx_pbc.sh topol.tpr LIG traj1.xtc traj2.xtc...```
+
+A python script ```apply_pbc_corr.py``` which utilises the transformations class in MDAnalysis is also available in the ```utils``` folder.
 
 
