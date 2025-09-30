@@ -31,6 +31,8 @@ def calculate_rmsf(
         align_in_memory:
             Whether to keep alignment in memory. If False, this will write a new trajectory.
             Default is True.
+        #pdb_out:
+            #Output PDB file with RMSF values as B-Factors.
 
     Returns:
         pd.DataFrame:
