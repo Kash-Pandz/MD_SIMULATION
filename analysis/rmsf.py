@@ -12,7 +12,7 @@ def calculate_rmsf(
     atom_sel: str = "protein and name CA",
     ref_frame: int = 0,
     align_in_memory: bool = True,
-    pdb_out: Optional[str] = None
+    #pdb_out: Optional[str] = None
 ) -> pd.DataFrame:
     """
     Calculate the Root Mean Square Fluctuation of CA atoms over a trajectory.
