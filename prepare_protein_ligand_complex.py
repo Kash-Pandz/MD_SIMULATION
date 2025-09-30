@@ -26,7 +26,8 @@ def run_cmd(cmd, cwd=None, shell=False):
                             stdout=sys.stdout, stderr=sys.stderr)
 
 
-def prepare_protein(input_pdb: str, output_pdb: str = "prot_p4a.pdb") -> str:
+def prepare_protein(input_pdb: str, output_pdb: str = "prot_cleaned.pdb") -> str:
+    """Clean input PDB file according to AMBER."""
     logger.info("Cleaning protein with pdb4amber...")
     run_cmd([
         "pdb4amber",
@@ -37,17 +38,19 @@ def prepare_protein(input_pdb: str, output_pdb: str = "prot_p4a.pdb") -> str:
     return output_pdb
 
 
-def extract_ligand(complex_pdb: str, resn: str) -> str:
+def extract_ligand(input_pdb: str, resn: str) -> str:
+    """Extract the ligand from the input complex PDB file."""
     output_pdb = f"{resn}_final.pdb"
     logger.info(f"Extracting ligand {resn} from complex...")
-    run_cmd(f"awk '$4==\"{resn}\" {{print $0}}' {complex.pdb} > {output_pdb}", shell=True)
+    run_cmd(f'awk \'$4=="{resn}" {{print $0}}\' {input_pdb} > {output_pdb}', shell=True)
     return output_pdb
     
 
 def prepare_ligand(ligand_pdb: str, charge: int = 0, resn: str = "LIG"):
+    """Prepare ligand forcefield parameter files."""
     h_pdb = f"{resn}_H.pdb"
     logger.info("Protonating ligand...")
-    run_cmd(["obabel", "-ipdb", ligand_pdb, "-opdb", "-O", "h_pdb", "-h"])
+    run_cmd(["obabel", "-ipdb", ligand_pdb, "-opdb", "-O", h_pdb, "-h"])
 
     sybl_mol2 = f"{resn}_sybl.mol2"
     logger.info("Running antechamber (SYBYL cleanup)...")
@@ -59,7 +62,7 @@ def prepare_ligand(ligand_pdb: str, charge: int = 0, resn: str = "LIG"):
     final_mol2 = f"{resn}.mol2"
     logger.info("Running antechamber (GAFF2 + charges)...")
     run_cmd([
-        "antechamber", "-i", sybl_mol2, "-fi", "mol2", "-o", final.mol2, "-fo", "mol2",
+        "antechamber", "-i", sybl_mol2, "-fi", "mol2", "-o", final_mol2, "-fo", "mol2",
         "-at", "gaff2", "-c", "bcc", "-s", "2", "-rn", resn, "-nc", str(charge)
     ])
 
@@ -73,6 +76,7 @@ def prepare_ligand(ligand_pdb: str, charge: int = 0, resn: str = "LIG"):
 
 
 def write_tleap(protein_pdb: str, lig_mol2: str, lig_frcmod: str, resn: str, output: str = "tleap.in") -> str:
+    """System setup with tleap (protein + ligand + water + ions). Outputs AMBER topology and coordinate files."""
     tleap_script = f"""
 source leaprc.protein.ff14SB
 source leaprc.gaff2
