@@ -90,7 +90,7 @@ The AMBER prmtop and inpcrd files can then be converted into GROMACS using the a
 
 This will generate SYSTEM.gro, SYSTEM.top, LIG.itp files. 
 
-Alternatively, use `amber_to_gromacs.py` to convert the .prmtop and .inpcrd files to GROMACS format using parmed. N.B Manual inspection and manipulation is required for generated .gro and .top files.
+Alternatively, use `utils/amber_to_gromacs.py` to convert the .prmtop and .inpcrd files to GROMACS format using parmed. N.B Manual inspection and manipulation is required for generated .gro and .top files.
 
 
 ### 3. MD simulation run
@@ -111,6 +111,6 @@ To apply correction to Periodic Boundary Condition effects on the MD trajectorie
 
 A python script ```apply_pbc_corr.py``` which utilises the transformations class in MDAnalysis is also available in the ```utils``` folder. The script is run:
 
-`python apply_pbc_corr.py topol.tpr rep1.xtc rep2.xtc rep3.xtc` 
+`python utils/apply_pbc_corr.py topol.tpr rep1.xtc rep2.xtc rep3.xtc` 
 
 
