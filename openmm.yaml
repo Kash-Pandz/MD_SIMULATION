@@ -15,7 +15,6 @@ dependencies:
   - openbabel
   - pip
   - pip:
-      # Installed via pip (also available on Conda, but faster via pip)
       - parmed=4.2.2
       - mdtraj=1.10.3
       - mdanalysis=2.8.0
