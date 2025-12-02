@@ -21,7 +21,7 @@ def parse_args():
     parser.add_argument("--checkpoint_npt", default="npt.chk", help="Checkpoint file for NPT equilibration")
     parser.add_argument("--checkpoint_prod", default="prod.chk", help="Checkpoint file for production run")
     parser.add_argument("--nvt_steps", nargs=3, type=int, default=[100000, 100000, 100000],
-                        help="Number of steps for each NVT stage (3 integers)")
+                        help="Number of steps for each NVT stage")
     parser.add_argument("--npt_steps", type=int, default=500000, help="Number of steps for NPT equilibration")
     parser.add_argument("--prod_steps", type=int, default=50000000, help="Number of steps for production run")
     
