@@ -87,15 +87,19 @@ python prepare_protein_only_system.py \
   --verbose
 ```
 
-### OR
-
 ### 2. protein-ligand system preparation
 
-The `python prepare_protein_ligand_complex.py` script allows a protein-ligand system to be setup, minimised and converted to gromacs format. The ligand AMBER FF parameters are derived using antechamber. If RESP charges required, `utils/resp.py` can be used. This script assigns RESP charges using Psi4.
+The `python prepare_protein_ligand_complex.py` script allows a protein-ligand system to be setup, minimised and converted to gromacs format. The ligand AMBER FF parameters are derived using antechamber. The following command is used to obtain the AMBER prmtop and inpcrd files:
 
-The following command can be used to obtain the AMBER prmtop and inpcrd files:
+```bash
+python prepare_protein_ligand_complex.py \
+  --input_pdb "INPUT_COMPLEX.pdb" \
+  --ligand_resname "LIG" \
+  --ligand_charge 0 \
+  --verbose
+```
 
-`python prepare_protein_ligand_complex.py --input_pdb "INPUT_COMPLEX.pdb", --ligand_resname "LIG", --ligand_charge 0, --verbose`
+If RESP charges required, `utils/resp.py` can be used. This script assigns RESP charges using Psi4.
 
 The AMBER prmtop and inpcrd files can then be converted into GROMACS using the acpype command:
 
