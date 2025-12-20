@@ -87,6 +87,7 @@ python prepare_protein_only_system.py \
   --verbose
 ```
 
+
 ### 2. protein-ligand system preparation
 
 The `python prepare_protein_ligand_complex.py` script allows a protein-ligand system to be setup, minimised and converted to gromacs format. The ligand AMBER FF parameters are derived using antechamber. The following command is used to obtain the AMBER prmtop and inpcrd files:
@@ -105,9 +106,7 @@ The AMBER prmtop and inpcrd files can then be converted into GROMACS using the a
 
 `acpype -p SYSTEM.prmtop -x SYSTEM.inpcrd -o gmx`
 
-This will generate SYSTEM.gro, SYSTEM.top, LIG.itp files. 
-
-Alternatively, use `utils/amber_to_gromacs.py` to convert the .prmtop and .inpcrd files to GROMACS format using parmed. N.B Manual inspection and manipulation is required for generated .gro and .top files.
+This will generate SYSTEM.gro, SYSTEM.top, LIG.itp files. Alternatively, use `utils/amber_to_gromacs.py` to convert the .prmtop and .inpcrd files to GROMACS format using parmed. N.B Manual inspection and manipulation is required for generated .gro and .top files.
 
 
 ### 3. MD simulation run
