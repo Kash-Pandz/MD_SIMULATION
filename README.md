@@ -130,8 +130,4 @@ A python script ```apply_pbc_corr.py``` which utilises the transformations class
 `python utils/apply_pbc_corr.py topol.tpr rep1.xtc rep2.xtc rep3.xtc` 
 
 
-| CDR   |
-|-------|
-|       |
-
 
