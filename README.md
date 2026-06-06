@@ -131,10 +131,10 @@ A python script ```apply_pbc_corr.py``` which utilises the transformations class
 
 
 ## Roadmap
-- [] Unbiased MD Simulation
-- [] Metadynamics
-- [] Gaussian Accelerated MD
-- [] Replica Exchange MD Simulation
+- [ ] Unbiased MD Simulation
+- [ ] Metadynamics
+- [ ] Gaussian Accelerated MD
+- [ ] Replica Exchange MD Simulation
 
 
 
