@@ -130,4 +130,11 @@ A python script ```apply_pbc_corr.py``` which utilises the transformations class
 `python utils/apply_pbc_corr.py topol.tpr rep1.xtc rep2.xtc rep3.xtc` 
 
 
+## Roadmap
+- [] Unbiased MD Simulation
+- [] Metadynamics
+- [] Gaussian Accelerated MD
+- [] Replica Exchange MD Simulation
+
+
 
