@@ -6,10 +6,10 @@ A modular OpenMM pipeline for preparing and simulating antibody structures start
 
 - [ ] 1. Input PDB obtained using crystal, homology or predicted structure. All structures need to be IMGT, Chothia etc numbered.
 - [ ] 2. System Preparation
-       - [ ] Disulphide detection
-       - [ ] ACE/NME terminal caps 
-       - [ ] Protonation (pdb2pqr + PROPKA)
-       - [ ] Solvation + neutralisation
+       - Disulphide detection
+       - ACE/NME terminal caps 
+       - Protonation (pdb2pqr + PROPKA)
+       - Solvation + neutralisation
 - [ ] 3. Two-stage minimisation (heavy atom -> unrestrained)
 - [ ] 4. Heating ramp using NVT ensemble (100 K -> Target Temp)
 - [ ] 5. NPT equilibration (5 stages by default and gradual restraint release)
