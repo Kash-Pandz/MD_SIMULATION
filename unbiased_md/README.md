@@ -35,3 +35,4 @@ All numeric settings live in two dataclasses, `PrepConfig` and `MDConfig`. Defau
 | NVT heating       | 100 K → T, 0.5 ns, 50 windows         | np.linspace                     |
 | NPT equilibration | 5 × 1 ns, k = 5/2/1/0.1/0 kcal/mol/Å² | backbone restraints             |
 | Production        | 100 ns × 3 replicas                   |                                 |
+
