@@ -2,7 +2,7 @@
 
 A modular OpenMM pipeline for preparing and simulating antibody structures starting from a crystal, homology or predicted structure.
 
-# Steps
+## Steps
 
 [ ] 1.  Input PDB obtained using crystal, homology or predicted structure. All structures need to be IMGT, Chothia etc numbered.
 [ ] 2.  System Preparation
