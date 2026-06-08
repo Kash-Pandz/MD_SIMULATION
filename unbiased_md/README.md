@@ -24,7 +24,7 @@ All numeric settings live in two dataclasses, `PrepConfig` and `MDConfig`. Defau
 | Water model       | TIP3P                                 | amber14/tip3p.xml               |
 | Box padding       | 1.0 nm                                | distance to edge of box         |
 | Ionic strength    | 0.15 M NaCl                           | with neutralisation             |
-| Disulfide cutoff  | 2.5 Å                                 | SG–SG; bonded ~ 2.05 Å          |
+| Disulfide cutoff  | 2.5 Å                                 | SG-SG; bonded ~ 2.05 Å          |
 | Timestep          | 4 fs                                  | with HMR + HBonds + rigid water |
 | Hydrogen mass     | 4 amu                                 | HMR mass                        |
 | NVT heating       | 100 K → T, 0.5 ns, 50 windows         | backbone restraints             |
@@ -35,8 +35,10 @@ All numeric settings live in two dataclasses, `PrepConfig` and `MDConfig`. Defau
 ## Methodology
 
 - [ ] Disulfide detection. Pairs of cysteine SG atoms within 2.5 Å are identified with MDAnalysis and the corresponding residues are renamed CYS → CYX so downstream tools treat them as bonded.
-- [ ] Terminal capping. N- and C- termini capped with ACE (acetyl) and NME (N-methylamide) respectively. Cap atom positions are placed from standard Engh & Hugh peptide-bond parameters (C–N = 1.329 Å, C=O = 1.231 Å, C–CA = 1.522 Å, CA–C–N = 116.2°,
-C–N–CA = 121.7°) using the Natural Extension Reference Frame (NeRF) algorithm (Parsons et al., 2005). Peptide bonds are placed
-trans (ω = 180°); φ of the first residue is set to −120°, and ψ of
+- [ ] Terminal capping. N- and C- termini capped with ACE (acetyl) and NME (N-methylamide) respectively. Cap atom positions are placed from standard Engh & Hugh peptide-bond parameters (C-N = 1.329 Å, C=O = 1.231 Å, C-CA = 1.522 Å, CA-C-N = 116.2°,
+C-N-CA = 121.7°) using the Natural Extension Reference Frame (NeRF) algorithm (Parsons et al., 2005). Peptide bonds are placed
+trans (ω = 180°); φ of the first residue is set to -120°, and ψ of
 the last residue is derived from the existing carbonyl O so the new
 amide lies in the correct peptide plane.
+- [ ] Protonation. pdb2pqr3.x with PROPKA-driven titration-state prediction and the AMBER naming convention.
+- [ ] Solvation. OpenMM `Modeller.addSolvent` with TIP3P water, 1.0 nm padding, and 0.15 M Na⁺/Cl⁻ (charge-neutralising)
