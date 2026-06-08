@@ -2,6 +2,11 @@
 
 A modular OpenMM pipeline for preparing and simulating antibody structures starting from a crystal, homology or predicted structure.
 
+
+## Install
+```bash
+git clone https.
+
 ## Steps
 
 - [ ] 1. Input PDB obtained using crystal, homology or predicted structure. All structures need to be IMGT, Chothia etc numbered.
@@ -10,3 +15,17 @@ A modular OpenMM pipeline for preparing and simulating antibody structures start
 - [ ] 4. Heating ramp using NVT ensemble (100 K -> Target Temp)
 - [ ] 5. NPT equilibration (5 stages by default and gradual restraint release)
 - [ ] 6. Production NPT (n_replicas x prod_ns)
+
+
+## Configuration
+
+All numeric settings live in two dataclasses, ```PrepConfig``` and ```MDConfig```. Defaults are tuned for an antibody Fv at 300K, 1 bar, 0.15M NaCl:
+
+| Parameter | Default | Notes |
+--------------------------------
+|
+---------------------------------
+|
+|
+|
+|
