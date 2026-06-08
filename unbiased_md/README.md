@@ -19,7 +19,7 @@ git clone https.
 
 ## Configuration
 
-All numeric settings live in two dataclasses, `PrepConfig` and `MDConfig`. Defaults are tuned for an antibody Fv at 300K, 1 bar, 0.15M NaCl:
+# All numeric settings live in two dataclasses, `PrepConfig` and `MDConfig`. Defaults are tuned for an antibody Fv at 300K, 1 bar, 0.15M NaCl:
 
 
 |     Parameter     |                Default                |              Notes              |
