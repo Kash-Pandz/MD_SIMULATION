@@ -42,7 +42,26 @@ the last residue is derived from the existing carbonyl O so the new
 amide lies in the correct peptide plane.
 - [ ] Protonation. pdb2pqr3.x with PROPKA-driven titration-state prediction and the AMBER naming convention.
 - [ ] Solvation. OpenMM `Modeller.addSolvent` with TIP3P water, 1.0 nm padding, and 0.15 M Na⁺/Cl⁻ (charge-neutralising)
+- [ ] MD. AMBER14 force field; particle-mesh Ewald with a 1.0 nm cutoff; HBonds constraints and rigid water; Hydrogen Mass Repartitioning at 4 amu enabling a 4 fs timestep. LangevinMiddleIntegrator at 1 ps⁻¹ friction. Monte-Carlo barostat at 1 bar (frequency = 25 steps).
+- [ ] Protocol. (i) heavy-atom-restrained minimisation (k = 10 kcal/mol/Å²) → unrestrained minimisation; (ii) 0.5 ns NVT heating from 100 K to the target temperature with a temperature ramp (50 windows) and heavy-atom restraints; (iii) five 1 ns NPT stages with backbone restraints decreasing 5 → 2 → 1 → 0.1 → 0 kcal/mol/Å²; (iv) n_replicas × production_ns ns unrestrained NPT production with independent random velocity seeds.
 
 
-[ACE Cap] ——— (Residue 1) ——— ... ——— (Residue N) ——— [NME Cap]
- (Acetyl)                                           (N-methylamide)
+## Citations
+- [ ] Engh, R. A. & Huber, R. (1991). Accurate bond and angle parameters for
+X-ray protein structure refinement. Acta Cryst. A47, 392–400.
+- [ ] Parsons, J., Holmes, J. B., Rojas, J. M., Tsai, J., & Strauss, C. E. M.
+(2005). Practical conversion from torsion space to Cartesian space for
+in silico protein synthesis. J. Comput. Chem. 26, 1063–1068.
+- [ ] Michaud-Agrawal, N., Denning, E. J., Woolf, T. B., & Beckstein, O.
+(2011). MDAnalysis: a toolkit for the analysis of molecular dynamics
+simulations. J. Comput. Chem. 32, 2319–2327.
+- [ ] Eastman, P. et al. (2017). OpenMM 7: rapid development of high
+performance algorithms for molecular dynamics. PLOS Comput. Biol.
+13, e1005659.
+- [ ] Jurrus, E. et al. (2018). Improvements to the APBS biomolecular
+solvation software suite (pdb2pqr). Protein Sci. 27, 112–128.
+- [ ] Hopkins, C. W., Le Grand, S., Walker, R. C., & Roitberg, A. E. (2015).
+Long-time-step molecular dynamics through hydrogen mass
+repartitioning. J. Chem. Theory Comput. 11, 1864–1874.
+
+
