@@ -43,7 +43,7 @@ amide lies in the correct peptide plane.
 - [ ] Protonation. pdb2pqr3.x with PROPKA-driven titration-state prediction and the AMBER naming convention.
 - [ ] Solvation. OpenMM `Modeller.addSolvent` with TIP3P water, 1.0 nm padding, and 0.15 M Na⁺/Cl⁻ (charge-neutralising)
 - [ ] MD. AMBER14 force field; particle-mesh Ewald with a 1.0 nm cutoff; HBonds constraints and rigid water; Hydrogen Mass Repartitioning at 4 amu enabling a 4 fs timestep. LangevinMiddleIntegrator at 1 ps⁻¹ friction. Monte-Carlo barostat at 1 bar (frequency = 25 steps).
-- [ ] Protocol. (i) heavy-atom-restrained minimisation (k = 10 kcal/mol/Å²) → unrestrained minimisation; (ii) 0.5 ns NVT heating from 100 K to the target temperature with a temperature ramp (50 windows) and heavy-atom restraints; (iii) five 1 ns NPT stages with backbone restraints decreasing 5 → 2 → 1 → 0.1 → 0 kcal/mol/Å²; (iv) n_replicas × production_ns ns unrestrained NPT production with independent random velocity seeds.
+- [ ] Protocol. (i) heavy-atom-restrained minimisation (k = 10 kcal/mol/Å²) -> unrestrained minimisation; (ii) 0.5 ns NVT heating from 100 K to the target temperature with a temperature ramp (50 windows) and heavy-atom restraints; (iii) five 1 ns NPT stages with backbone restraints decreasing 5 → 2 → 1 → 0.1 → 0 kcal/mol/Å²; (iv) n_replicas × production_ns ns unrestrained NPT production with independent random velocity seeds.
 
 
 ## Citations
