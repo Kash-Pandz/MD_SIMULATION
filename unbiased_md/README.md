@@ -42,3 +42,7 @@ the last residue is derived from the existing carbonyl O so the new
 amide lies in the correct peptide plane.
 - [ ] Protonation. pdb2pqr3.x with PROPKA-driven titration-state prediction and the AMBER naming convention.
 - [ ] Solvation. OpenMM `Modeller.addSolvent` with TIP3P water, 1.0 nm padding, and 0.15 M Na⁺/Cl⁻ (charge-neutralising)
+
+
+[ACE Cap] ——— (Residue 1) ——— ... ——— (Residue N) ——— [NME Cap]
+ (Acetyl)                                           (N-methylamide)
