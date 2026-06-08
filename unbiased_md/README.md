@@ -3,10 +3,6 @@
 A modular OpenMM pipeline for preparing and simulating antibody structures starting from a crystal, homology or predicted structure.
 
 
-## Install
-```bash
-git clone https.
-
 ## Steps
 
 - [ ] 1. Input PDB obtained using crystal, homology or predicted structure. All structures need to be IMGT, Chothia etc numbered.
@@ -16,7 +12,7 @@ git clone https.
 - [ ] 5. NPT equilibration (5 stages by default and gradual restraint release)
 - [ ] 6. Production NPT (n_replicas x prod_ns)
 
-```
+
 ## Configuration
 
 All numeric settings live in two dataclasses, `PrepConfig` and `MDConfig`.
@@ -36,4 +32,3 @@ Defaults are tuned for an antibody Fv at 300K, 1 bar, 0.15M NaCl:
 | NPT equilibration | 5 × 1 ns, k = 5/2/1/0.1/0 kcal/mol/Å² | backbone restraints             |
 | Production        | 100 ns × 3 replicas                   |                                 |
 
-```
